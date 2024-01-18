@@ -63,6 +63,10 @@ class Board:
 
     #рисование в процессе игры
     def render(self, screen):
+        if self.difficalt == 2:
+            text = pygame.font.Font(None, 50).render('i', True, (100, 255, 100))
+            screen.blit(text, (900, 20))
+            pygame.draw.rect(screen, (100, 255, 100), (890, 10, 33, 48), 3)
         text = pygame.font.Font(None, 50).render(f'Ваш счёт: {self.score}', True, (100, 255, 100))
         screen.blit(text, (20, 20))
         length = len(self.last) // 2 - 1 if self.show == 2 else len(self.last) // 2
@@ -137,6 +141,8 @@ class Board:
                     self.show = (self.show + 1) % 3
                     self.images_show = [[0 if j != 2 else 2 for j in self.images_show[i]]
                                         for i in range(len(self.images_show))]
+            elif 890 < cell_coords[0] < 923 and 10 < cell_coords[1] < 58:
+                self.play = 'information'
         if self.play == 'start':
             if self.show == 0:
                 self.show += 1
@@ -153,6 +159,8 @@ class Board:
             if 600 < cell_coords[0] < 970 and 475 < cell_coords[1] < 585:
                 self.play = 'play'
                 self.set_view(self.width, self.height, self.left, self.top, self.cell_size_x, self.cell_size_y)
+        if self.play == 'information':
+            self.inform()
 
 
     def check(self):
@@ -170,6 +178,13 @@ class Board:
                 0 < (y - self.top) / self.cell_size_y < self.height:
             return ((x - self.left) // self.cell_size_x, (y - self.top) // self.cell_size_y)
         return None
+
+    def inform(self):
+        for num, i in enumerate(self.last[-2:]):
+            image = load_image(f'{self.images[self.width * i[1] + i[0]]}.jpg',
+                               directory=os.path.abspath(f'images{self.difficalt}'))
+            image = pygame.transform.scale(image, (450, 450))
+            screen.blit(image, (10 + 400 * num, 20))
 
 
 pygame.init()
