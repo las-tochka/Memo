@@ -39,7 +39,8 @@ class Board:
     def set_view(self, width, height, left, top, cell_size_x, cell_size_y):
         self.width = width
         self.height = height
-        self.images = list(range(1, self.height * self.width // 2 + 1)) + list(range(1, self.height * self.width // 2 + 1))
+        self.images = list(range(1, self.height * self.width // 2 + 1)) +\
+                      list(range(1, self.height * self.width // 2 + 1))
         random.shuffle(self.images)
         self.images_show = [[0 for _ in range(self.height)] for _ in range(self.width)]
         self.score = 0
@@ -69,11 +70,13 @@ class Board:
             for j in range(self.height):
                 if self.images_show[i][j] != 2:
                     if self.images_show[i][j] == 1:
-                        image = load_image(f'{self.images[self.width * j + i]}.jpg', directory=os.path.abspath('images1'))
+                        image = load_image(f'{self.images[self.width * j + i]}.jpg',
+                                           directory=os.path.abspath('images1'))
                     else:
                         image = load_image('0.jpg', directory=os.path.abspath('images1'))
                     image = pygame.transform.scale(image, (self.cell_size_x - 4, self.cell_size_y - 4))
-                    screen.blit(image, (self.left + self.cell_size_x * i + 2, self.top + self.cell_size_y * j + 2))
+                    screen.blit(image, (self.left + self.cell_size_x * i + 2,
+                                        self.top + self.cell_size_y * j + 2))
                     pygame.draw.rect(screen, 'orange',
                                      (self.left + self.cell_size_x * i + 2, self.top + self.cell_size_y * j + 2,
                                       self.cell_size_x - 4, self.cell_size_y - 4), 3)
@@ -117,20 +120,27 @@ class Board:
     def on_click(self, cell_coords):
         if self.play == 'play':
             cell = self.get_cell(cell_coords)
-            if self.show == 0 or self.show == 1:
-                if self.images_show[cell[0]][cell[1]] != 2:
-                    if self.last == [] or self.show == 0 or not (self.last[-1][0] == cell[0] and self.last[-1][1] == cell[1]):
-                        self.images_show[cell[0]][cell[1]] = 1
-                        self.last += [cell]
-                        self.show = (self.show + 1) % 3
-            else:
-                self.check()
-                self.show = (self.show + 1) % 3
-                self.images_show = [[0 if j != 2 else 2 for j in self.images_show[i]] for i in range(len(self.images_show))]
+            if cell != None:
+                if self.show == 0 or self.show == 1:
+                    if self.images_show[cell[0]][cell[1]] != 2:
+                        if self.last == [] or self.show == 0 or\
+                                not (self.last[-1][0] == cell[0] and self.last[-1][1] == cell[1]):
+                            self.images_show[cell[0]][cell[1]] = 1
+                            self.last += [cell]
+                            self.show = (self.show + 1) % 3
+                else:
+                    self.check()
+                    self.show = (self.show + 1) % 3
+                    self.images_show = [[0 if j != 2 else 2 for j in self.images_show[i]]
+                                        for i in range(len(self.images_show))]
         if self.play == 'start':
             if self.show == 0:
                 self.show += 1
             elif self.show == 1:
+                self.images = list(range(1, self.height * self.width // 2 + 1)) + list(
+                    range(1, self.height * self.width // 2 + 1))
+                random.shuffle(self.images)
+                self.images_show = [[0 for _ in range(self.height)] for _ in range(self.width)]
                 if 135 < cell_coords[0] < 485 and 275 < cell_coords[1] < 405:
                     self.show = 2
                 if 525 < cell_coords[0] < 855 and 275 < cell_coords[1] < 405:
@@ -158,7 +168,8 @@ class Board:
 
     def get_cell(self, mouse_pos):
         x, y = mouse_pos
-        if 0 < (x - self.left) / self.cell_size_x < self.width and 0 < (y - self.top) / self.cell_size_y < self.height:
+        if 0 < (x - self.left) / self.cell_size_x < self.width and\
+                0 < (y - self.top) / self.cell_size_y < self.height:
             return ((x - self.left) // self.cell_size_x, (y - self.top) // self.cell_size_y)
         return None
 
@@ -170,6 +181,8 @@ board = Board(10, 10)
 board.set_view(6, 4, 20, 80, 160, 120)
 running = True
 clock = pygame.time.Clock()
+pygame.mixer.music.load('music.mp3')
+pygame.mixer.music.play(-1)
 v = 8
 while running:
     screen.fill('white')
