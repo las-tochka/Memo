@@ -27,6 +27,8 @@ class Board:
         self.show = 0
         #общее состояние приложение(play, start, win)
         self.play = 'start'
+        #
+        self.difficalt = 0
         #карточки на эту игру
         self.images = list(range(1, self.height * self.width // 2 + 1)) + list(
             range(1, self.height * self.width // 2 + 1))
@@ -71,9 +73,9 @@ class Board:
                 if self.images_show[i][j] != 2:
                     if self.images_show[i][j] == 1:
                         image = load_image(f'{self.images[self.width * j + i]}.jpg',
-                                           directory=os.path.abspath('images1'))
+                                           directory=os.path.abspath(f'images{self.difficalt}'))
                     else:
-                        image = load_image('0.jpg', directory=os.path.abspath('images1'))
+                        image = load_image('0.jpg', directory=os.path.abspath(f'images{self.difficalt}'))
                     image = pygame.transform.scale(image, (self.cell_size_x - 4, self.cell_size_y - 4))
                     screen.blit(image, (self.left + self.cell_size_x * i + 2,
                                         self.top + self.cell_size_y * j + 2))
@@ -109,10 +111,12 @@ class Board:
             pygame.draw.rect(screen, 'orange', (525, 275, 330, 130), 3)
         if self.show == 2:
             self.set_view(6, 4, 20, 80, 160, 120)
+            self.difficalt = 1
             self.play = 'play'
             self.show = 0
         if self.show == 3:
-            self.set_view(6, 4, 20, 80, 160, 120)
+            self.set_view(4, 3, 20, 80, 240, 155)
+            self.difficalt = 2
             self.play = 'play'
             self.show = 0
 
@@ -137,10 +141,7 @@ class Board:
             if self.show == 0:
                 self.show += 1
             elif self.show == 1:
-                self.images = list(range(1, self.height * self.width // 2 + 1)) + list(
-                    range(1, self.height * self.width // 2 + 1))
-                random.shuffle(self.images)
-                self.images_show = [[0 for _ in range(self.height)] for _ in range(self.width)]
+                self.set_view(self.width, self.height, self.left, self.top, self.cell_size_x, self.cell_size_y)
                 if 135 < cell_coords[0] < 485 and 275 < cell_coords[1] < 405:
                     self.show = 2
                 if 525 < cell_coords[0] < 855 and 275 < cell_coords[1] < 405:
@@ -151,10 +152,7 @@ class Board:
                 self.play = 'start'
             if 600 < cell_coords[0] < 970 and 475 < cell_coords[1] < 585:
                 self.play = 'play'
-                self.images = list(range(1, self.height * self.width // 2 + 1)) + list(
-                    range(1, self.height * self.width // 2 + 1))
-                random.shuffle(self.images)
-                self.images_show = [[0 for _ in range(self.height)] for _ in range(self.width)]
+                self.set_view(self.width, self.height, self.left, self.top, self.cell_size_x, self.cell_size_y)
 
 
     def check(self):
