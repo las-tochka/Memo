@@ -2,6 +2,7 @@ import pygame
 import sys
 import os
 import random
+import json
 
 
 def load_image(name, directory=os.getcwd()):
@@ -60,6 +61,8 @@ class Board:
             self.win(screen)
         if self.play == 'start':
             self.start(screen)
+        if self.play == 'information':
+            self.inform()
 
     #рисование в процессе игры
     def render(self, screen):
@@ -124,8 +127,23 @@ class Board:
             self.play = 'play'
             self.show = 0
 
+    def inform(self):
+        for num, i in enumerate(self.last[-2:]):
+            image = load_image(f'{self.images[self.width * i[1] + i[0]]}.jpg',
+                               directory=os.path.abspath(f'images{self.difficalt}'))
+            image = pygame.transform.scale(image, (450, 450))
+            screen.blit(image, (10 + 500 * num, 20))
+            frase = self.get_text(self.images[self.width * i[1] + i[0]])
+            text = pygame.font.Font(None, 50).render(frase, True, (100, 255, 100))
+            screen.blit(text, (10 + 500 * num, 500))
+        text = pygame.font.Font(None, 50).render('Вернуться', True, (100, 255, 100))
+        screen.blit(text, (700, 550))
+        pygame.draw.rect(screen, 'orange', (695, 545, 200, 50), 3)
 
     def on_click(self, cell_coords):
+        if self.play == 'information':
+            if 695 < cell_coords[0] < 895 and 545 < cell_coords[1] < 595:
+                self.play = 'play'
         if self.play == 'play':
             cell = self.get_cell(cell_coords)
             if cell != None:
@@ -143,6 +161,7 @@ class Board:
                                         for i in range(len(self.images_show))]
             elif 890 < cell_coords[0] < 923 and 10 < cell_coords[1] < 58:
                 self.play = 'information'
+                print('yes')
         if self.play == 'start':
             if self.show == 0:
                 self.show += 1
@@ -159,9 +178,6 @@ class Board:
             if 600 < cell_coords[0] < 970 and 475 < cell_coords[1] < 585:
                 self.play = 'play'
                 self.set_view(self.width, self.height, self.left, self.top, self.cell_size_x, self.cell_size_y)
-        if self.play == 'information':
-            self.inform()
-
 
     def check(self):
         if self.images[self.width * self.last[-1][1] + self.last[-1][0]] \
@@ -179,12 +195,10 @@ class Board:
             return ((x - self.left) // self.cell_size_x, (y - self.top) // self.cell_size_y)
         return None
 
-    def inform(self):
-        for num, i in enumerate(self.last[-2:]):
-            image = load_image(f'{self.images[self.width * i[1] + i[0]]}.jpg',
-                               directory=os.path.abspath(f'images{self.difficalt}'))
-            image = pygame.transform.scale(image, (450, 450))
-            screen.blit(image, (10 + 400 * num, 20))
+    def get_text(self, num):
+        with open('json_2.json') as file:
+            data = json.load(file)[str(num)]
+            return data
 
 
 pygame.init()
